@@ -6,6 +6,7 @@ There are two .env files that will need to be created in the root directory in o
 
 They each need to be inserted with a `PGDATABASE=` key with their respective database name.
 
+
 They should look something like this:
 
 #### .env.test
