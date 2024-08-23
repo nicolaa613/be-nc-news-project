@@ -2,19 +2,19 @@
 
 ## Local Setup
 
-There are two .env files that will need to be created in the root directory in order to run this project locally. A '.env.test' file and a '.env.development' file.
+There are two .env files that will need to be created in the root directory in order to run this project locally. A `.env.test` file and a `.env.development` file.
 
 They each need to be inserted with a 'PGDATABASE=' key with their respective database name.
 
 They should look something like this:
 
-### .env.test
+#### .env.test
 
-'PGDATABASE=nc_news_test'
+`PGDATABASE=nc_news_test`
 
-### .env.development 
+#### .env.development 
 
-'PGDATABASE=nc_news'
+`PGDATABASE=nc_news`
 
 
 
