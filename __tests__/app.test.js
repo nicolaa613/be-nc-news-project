@@ -3,6 +3,7 @@ const app = require("../app.js");
 const seed = require("../db/seeds/seed.js");
 const db = require("../db/connection.js");
 const request = require("supertest");
+const endpoints = require("../endpoints.json");
 
 //what do we want out of our endpoints??
 
@@ -39,6 +40,23 @@ describe("NC News API testing", () => {
           expect(body.message).toBe(
             "This is a bad request, endpoint not found!"
           );
+        });
+    });
+  });
+  describe("GET /api - will retrieve information on all of the available API endpoints", () => {
+    test("/api responds with a 200 status", () => {
+      return request(app)
+        .get("/api")
+        .expect(200)
+    });
+    test("/api responds with an object of all available endpoints", () => {
+      return request(app)
+        .get("/api")
+        .expect(200)
+        .then((data) => {
+          const parsedEndpointsData = JSON.parse(data.text)
+          expect(typeof parsedEndpointsData).toBe("object")
+          expect(parsedEndpointsData).toEqual(endpoints)
         });
     });
   });
