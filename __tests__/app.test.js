@@ -121,24 +121,24 @@ describe("NC News API testing", () => {
     });
     test("the articles are sorted by date in descending order - newest to oldest", () => {
       return request(app)
-      .get("/api/articles")
-      .expect(200)
-      .then(({body}) => {
-        const articles = body.rows
-        expect(articles).toBeSortedBy('created_at', {descending: true})
-      })
-    })
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+          const articles = body.rows;
+          expect(articles).toBeSortedBy("created_at", { descending: true });
+        });
+    });
     test("none of the articles have a body property", () => {
       return request(app)
-      .get("/api/articles")
-      .expect(200)
-      .then(({body}) => {
-        const articles = body.rows
-        articles.forEach((article) => {
-          expect(article).not.toHaveProperty('body')
-        })
-      })
-    })
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+          const articles = body.rows;
+          articles.forEach((article) => {
+            expect(article).not.toHaveProperty("body");
+          });
+        });
+    });
     test("a 404 status code and an error message is sent when an invalid address is requested", () => {
       return request(app)
         .get("/api/article")
@@ -147,6 +147,53 @@ describe("NC News API testing", () => {
           expect(body.message).toBe(
             "This is a bad request, endpoint not found!"
           );
+        });
+    });
+  });
+  describe("GET /api/articles/:article_id/comments - will get all of the comments for an article", () => {
+    test("will respond with a 200 status code and an array of comments for the requested article", () => {
+      return request(app)
+        .get("/api/articles/9/comments")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).toHaveLength(2);
+          expect(Array.isArray(body)).toBe(true);
+          body.forEach((comment) => {
+            expect(comment).toMatchObject({
+              comment_id: expect.any(Number),
+              body: expect.any(String),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              article_id: expect.any(Number),
+            });
+          });
+        });
+    });
+    test("the comments are sorted by date, the most recent first", () => {
+      return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).toBeSortedBy("created_at", { descending: true });
+        });
+    });
+    test("will return a 400 status code and error message when the request is invalid", () => {
+      return request(app)
+        .get("/api/articles/pomegrante/comments")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe(
+            "This is a bad request, endpoint not found!"
+          );
+        });
+    });
+    test("returns a 404 status code and error message when the request is valid but doesn't exist", () => {
+      return request(app)
+        .get("/api/articles/613/comments")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("No comments available!");
         });
     });
   });
