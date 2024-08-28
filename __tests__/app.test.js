@@ -89,11 +89,65 @@ describe("NC News API testing", () => {
     });
     test("/api/articles/:article_id returns a 404 status code and error message when the request is valid but doesn't exist", () => {
       return request(app)
-      .get("/api/articles/700")
-      .expect(404)
+        .get("/api/articles/700")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("Article doesn't exist!");
+        });
+    });
+  });
+  describe("GET /api/articles - will retrieve all articles in the database", () => {
+    test("respsonds with a 200 status code and an array of article objects", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+          //I've manually checked comment_count, run a test potentially
+          const articles = body.rows;
+          expect(Array.isArray(articles)).toBe(true);
+          articles.forEach((article) => {
+            expect(article).toMatchObject({
+              author: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+              comment_count: expect.any(String),
+            });
+          });
+        });
+    });
+    test("the articles are sorted by date in descending order - newest to oldest", () => {
+      return request(app)
+      .get("/api/articles")
+      .expect(200)
       .then(({body}) => {
-        expect(body.message).toBe("Article doesn't exist!")
+        const articles = body.rows
+        expect(articles).toBeSortedBy('created_at', {descending: true})
       })
     })
+    test("none of the articles have a body property", () => {
+      return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({body}) => {
+        const articles = body.rows
+        articles.forEach((article) => {
+          expect(article).not.toHaveProperty('body')
+        })
+      })
+    })
+    test("a 404 status code and an error message is sent when an invalid address is requested", () => {
+      return request(app)
+        .get("/api/article")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe(
+            "This is a bad request, endpoint not found!"
+          );
+        });
+    });
   });
 });
