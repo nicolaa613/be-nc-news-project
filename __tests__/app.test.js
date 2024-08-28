@@ -45,19 +45,55 @@ describe("NC News API testing", () => {
   });
   describe("GET /api - will retrieve information on all of the available API endpoints", () => {
     test("/api responds with a 200 status", () => {
-      return request(app)
-        .get("/api")
-        .expect(200)
+      return request(app).get("/api").expect(200);
     });
     test("/api responds with an object of all available endpoints", () => {
       return request(app)
         .get("/api")
         .expect(200)
         .then((data) => {
-          const parsedEndpointsData = JSON.parse(data.text)
-          expect(typeof parsedEndpointsData).toBe("object")
-          expect(parsedEndpointsData).toEqual(endpoints)
+          const parsedEndpointsData = JSON.parse(data.text);
+          expect(typeof parsedEndpointsData).toBe("object");
+          expect(parsedEndpointsData).toEqual(endpoints);
         });
     });
+  });
+  describe("GET /api/articles/:article_id - will retrieve an article by its requested id", () => {
+    test("/api/articles/:article_id will return a 200 status code and an article with the correct properties, when a valid article_id is requested", () => {
+      return request(app)
+        .get("/api/articles/1")
+        .expect(200)
+        .then((response) => {
+          const article = response.body;
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            body: expect.any(String),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+          });
+        });
+    });
+    test("/api/articles/:article_id will return a 400 status code and error message when the request is invalid", () => {
+      return request(app)
+        .get("/api/articles/cherries")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe(
+            "This is a bad request, endpoint not found!"
+          );
+        });
+    });
+    test("/api/articles/:article_id returns a 404 status code and error message when the request is valid but doesn't exist", () => {
+      return request(app)
+      .get("/api/articles/700")
+      .expect(404)
+      .then(({body}) => {
+        expect(body.message).toBe("Article doesn't exist!")
+      })
+    })
   });
 });
