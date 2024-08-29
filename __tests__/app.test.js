@@ -197,4 +197,76 @@ describe("NC News API testing", () => {
         });
     });
   });
+  describe("POST /ap/articles/:article_id/comments - will add a comment for the requested aticle", () => {
+    test("will respond with a 201 status code and the posted comment", () => {
+      const newComment = {
+        username: "butter_bridge",
+        body: "I hope you get this comment",
+      };
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send(newComment)
+        .expect(201)
+        .then((response) => {
+          const addedComment = response.body.comment;
+          expect(typeof addedComment.comment_id).toBe("number");
+          expect(addedComment.body).toBe("I hope you get this comment");
+          expect(addedComment.article_id).toBe(1);
+          expect(addedComment.author).toBe("butter_bridge");
+          expect(typeof addedComment.votes).toBe("number");
+          expect(typeof addedComment.created_at).toBe("string");
+        });
+    });
+    test("will respond with 400 status code and an error message when the username doesn't exist", () => {
+      const newComment = {
+        username: "banana",
+        body: "This should not get posted on the article",
+      };
+      return request(app)
+        .post("/api/articles/7/comments")
+        .send(newComment)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Username does not exist!");
+        });
+    });
+    test("will respond with 400 status code and an error message when there is no comment body", () => {
+      const newComment = { username: "icellusedkars" };
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send(newComment)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("No comment to post!");
+        });
+    });
+    test("will respond with 400 status code and an error message if user attempts to leave an empty comment", () => {
+      const newComment = { username: "icellusedkars", body: "" };
+      return request(app)
+        .post("/api/articles/7/comments")
+        .send(newComment)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Cannot post an empty comment!");
+        });
+    });
+    test("will return a 400 status code and error message when the requested article_id is invalid", () => {
+      return request(app)
+        .get("/api/articles/orange/comments")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe(
+            "This is a bad request, endpoint not found!"
+          );
+        });
+    });
+    test("returns a 404 status code and error message when the requested article_id is valid but doesn't exist", () => {
+      return request(app)
+        .get("/api/articles/9030/comments")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("No comments available!");
+        });
+    });
+  });
 });
