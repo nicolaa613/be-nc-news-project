@@ -24,7 +24,7 @@ describe("NC News API testing", () => {
         .get("/api/topics")
         .expect(200)
         .then(({ body }) => {
-          const topics = body.rows;
+          const topics = body;
           expect(Array.isArray(topics)).toBe(true);
           topics.forEach((topic) => {
             expect(typeof topic.slug).toBe("string");
