@@ -17,7 +17,8 @@ exports.selectArticles = () => {
         ORDER BY created_at DESC
         `;
 
-  return db.query(articlesQuery).then((articlesData) => {
+  return db.query(articlesQuery).then((data) => {
+    const articlesData = data.rows
     return articlesData;
   });
 };

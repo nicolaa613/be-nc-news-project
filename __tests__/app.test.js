@@ -103,7 +103,7 @@ describe("NC News API testing", () => {
         .expect(200)
         .then(({ body }) => {
           //I've manually checked comment_count, run a test potentially
-          const articles = body.rows;
+          const articles = body;
           expect(Array.isArray(articles)).toBe(true);
           articles.forEach((article) => {
             expect(article).toMatchObject({
@@ -124,7 +124,7 @@ describe("NC News API testing", () => {
         .get("/api/articles")
         .expect(200)
         .then(({ body }) => {
-          const articles = body.rows;
+          const articles = body;
           expect(articles).toBeSortedBy("created_at", { descending: true });
         });
     });
@@ -133,7 +133,7 @@ describe("NC News API testing", () => {
         .get("/api/articles")
         .expect(200)
         .then(({ body }) => {
-          const articles = body.rows;
+          const articles = body;
           articles.forEach((article) => {
             expect(article).not.toHaveProperty("body");
           });
