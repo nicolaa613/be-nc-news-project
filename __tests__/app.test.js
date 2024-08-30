@@ -225,7 +225,7 @@ describe("NC News API testing", () => {
       return request(app)
         .post("/api/articles/7/comments")
         .send(newComment)
-        .expect(400)
+        .expect(404)
         .then(({ body }) => {
           expect(body.message).toBe("Username does not exist!");
         });

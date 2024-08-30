@@ -10,6 +10,12 @@ exports.insertComment = (article_id, newComment) => {
     )
     .then((commentData) => {
       const comment = commentData.rows[0];
+      if (comment.body.length === 0) {
+        return Promise.reject({
+          message: "Cannot post an empty comment!",
+          status: 400,
+        });
+      }
       return comment;
     });
 };

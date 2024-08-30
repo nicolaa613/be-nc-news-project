@@ -31,7 +31,7 @@ app.all("/*", (request, response) => {
 
 app.use((error, request, response, next) => {
   if (error.code === "23503") {
-    response.status(400).send({ message: "Username does not exist!" });
+    response.status(404).send({ message: "Username does not exist!" });
   } else if (error.code === "23502") {
     response.status(400).send({ message: "No comment to post!" });
   } else {
