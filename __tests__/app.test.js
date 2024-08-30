@@ -193,7 +193,9 @@ describe("NC News API testing", () => {
         .get("/api/articles/613/comments")
         .expect(404)
         .then(({ body }) => {
-          expect(body.message).toBe("No comments available!");
+          expect(body.message).toBe(
+            "No comments available, article doesn't exist!"
+          );
         });
     });
   });
@@ -251,21 +253,128 @@ describe("NC News API testing", () => {
         });
     });
     test("will return a 400 status code and error message when the requested article_id is invalid", () => {
+      const newComment = {
+        username: "butter_bridge",
+        body: "I hope you get this comment",
+      };
       return request(app)
-        .get("/api/articles/orange/comments")
+        .post("/api/articles/orange/comments")
+        .send(newComment)
         .expect(400)
         .then(({ body }) => {
           expect(body.message).toBe(
-            "This is a bad request, endpoint not found!"
+            "This is a bad request, invalid article id!"
           );
         });
     });
     test("returns a 404 status code and error message when the requested article_id is valid but doesn't exist", () => {
+      const newComment = {
+        username: "butter_bridge",
+        body: "I hope you get this comment",
+      };
       return request(app)
-        .get("/api/articles/9030/comments")
+        .post("/api/articles/9030/comments")
+        .send(newComment)
         .expect(404)
         .then(({ body }) => {
-          expect(body.message).toBe("No comments available!");
+          expect(body.message).toBe(
+            "Cannot post comment, article doesn't exist!"
+          );
+        });
+    });
+  });
+  describe("PATCH /api/articles/:article_id - will update the requested article's vote count", () => {
+    test("will respond with a 200 status code and the updated article object", () => {
+      const articleUpdate = { inc_votes: 10 };
+
+      return request(app)
+        .patch("/api/articles/7")
+        .send(articleUpdate)
+        .expect(200)
+        .then((response) => {
+          const updatedArticle = response.body;
+          expect(updatedArticle.article_id).toBe(7);
+          expect(typeof updatedArticle.title).toBe("string");
+          expect(typeof updatedArticle.topic).toBe("string");
+          expect(typeof updatedArticle.author).toBe("string");
+          expect(typeof updatedArticle.body).toBe("string");
+          expect(typeof updatedArticle.created_at).toBe("string");
+          expect(updatedArticle.votes).toBe(10);
+          expect(typeof updatedArticle.article_img_url).toBe("string");
+        });
+    });
+    test("the PATCH will also descrease vote value", () => {
+      const articleUpdate = { inc_votes: -10 };
+
+      return request(app)
+        .patch("/api/articles/7")
+        .send(articleUpdate)
+        .expect(200)
+        .then((response) => {
+          const updatedArticle = response.body;
+          expect(updatedArticle.votes).toBe(-10);
+        });
+    });
+    test("the article is returned unaltered if the value of inc_vote is 0", () => {
+      const articleUpdate = { inc_votes: 0 };
+
+      return request(app)
+        .patch("/api/articles/7")
+        .send(articleUpdate)
+        .expect(200)
+        .then((response) => {
+          const updatedArticle = response.body;
+          expect(updatedArticle.votes).toBe(0);
+        });
+    });
+    test("will respond with 400 status code and an error message when inc_vote isn't provided", () => {
+      const articleUpdate = {};
+
+      return request(app)
+        .patch("/api/articles/1")
+        .send(articleUpdate)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe(
+            "No data provided. Cannot execute request!"
+          );
+        });
+    });
+    test("will respond with 404 status code and an error message when the inc_vote passed is of the wrong data type", () => {
+      const articleUpdate = { inc_votes: "please increase by 7" };
+
+      return request(app)
+        .patch("/api/articles/3")
+        .send(articleUpdate)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("This is a bad request, invalid input!");
+        });
+    });
+    test("will return a 400 status code and error message when the requested article_id is invalid", () => {
+      const articleUpdate = { inc_votes: 10 };
+
+      return request(app)
+        .patch("/api/articles/plum")
+        .send(articleUpdate)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe(
+            "This is a bad request, invalid article id!"
+          );
+        });
+    });
+    test("returns a 404 status code and error message when the requested article_id is valid but doesn't exist", () => {
+      const articleUpdate = { inc_votes: 10 };
+
+      return request(app)
+        .patch("/api/articles/903")
+        .send(articleUpdate)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe(
+            "Cannot alter vote, article doesn't exist!"
+          );
         });
     });
   });

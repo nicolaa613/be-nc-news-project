@@ -16,7 +16,7 @@ exports.fetchComments = (article_id) => {
       const requestedComments = comments.rows;
       if (requestedComments.length === 0) {
         return Promise.reject({
-          message: "No comments available!",
+          message: "No comments available, article doesn't exist!",
           status: 404,
         });
       }
