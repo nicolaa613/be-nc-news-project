@@ -7,7 +7,7 @@ exports.updateArticle = (article_id, articleUpdate) => {
       status: 400,
     });
   }
-  if (isNaN(article_id)) {
+  if (isNaN(article_id)) { //may not have to do these checks, psql should throw out an error - but it is very readable so it is okay to leave
     return Promise.reject({
       message: "This is a bad request, invalid article id!",
       status: 400,
@@ -16,7 +16,7 @@ exports.updateArticle = (article_id, articleUpdate) => {
   if (isNaN(articleUpdate.inc_votes)) {
     return Promise.reject({
       message: "This is a bad request, invalid input!",
-      status: 404,
+      status: 400,
     });
   }
   return db

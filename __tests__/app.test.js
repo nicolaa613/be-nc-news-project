@@ -38,7 +38,7 @@ describe("NC News API testing", () => {
         .expect(404)
         .then(({ body }) => {
           expect(body.message).toBe(
-            "This is a bad request, endpoint not found!"
+            "Endpoint not found!"
           );
         });
     });
@@ -145,7 +145,7 @@ describe("NC News API testing", () => {
         .expect(404)
         .then(({ body }) => {
           expect(body.message).toBe(
-            "This is a bad request, endpoint not found!"
+            "Endpoint not found!"
           );
         });
     });
@@ -340,13 +340,13 @@ describe("NC News API testing", () => {
           );
         });
     });
-    test("will respond with 404 status code and an error message when the inc_vote passed is of the wrong data type", () => {
+    test("will respond with 400 status code and an error message when the inc_vote passed is of the wrong data type", () => {
       const articleUpdate = { inc_votes: "please increase by 7" };
 
       return request(app)
         .patch("/api/articles/3")
         .send(articleUpdate)
-        .expect(404)
+        .expect(400)
         .then(({ body }) => {
           expect(body.message).toBe("This is a bad request, invalid input!");
         });
