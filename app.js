@@ -8,6 +8,7 @@ const { getComments } = require("./controllers/get-comments.controller");
 const { postComment } = require("./controllers/post-comment.controller");
 const { patchArticle } = require("./controllers/patch-article.controller");
 const { deleteComment } = require("./controllers/delete-comment.controller");
+const { getUsers } = require("./controllers/get-users.controller");
 const {
   customErrorHandling,
   psqlErrorHandling,
@@ -31,6 +32,8 @@ app.post("/api/articles/:article_id/comments", postComment);
 app.patch("/api/articles/:article_id", patchArticle);
 
 app.delete("/api/comments/:comment_id", deleteComment);
+
+app.get("/api/users", getUsers);
 
 //Error-Handling Middleware
 
