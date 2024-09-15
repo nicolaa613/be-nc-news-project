@@ -7,7 +7,12 @@ const { getAllArticles } = require("./controllers/get-all-articles.controller");
 const { getComments } = require("./controllers/get-comments.controller");
 const { postComment } = require("./controllers/post-comment.controller");
 const { patchArticle } = require("./controllers/patch-article.controller");
-const { customErrorHandling, psqlErrorHandling, generalErrorHandling } = require("./errors/errors");
+const { deleteComment } = require("./controllers/delete-comment.controller");
+const {
+  customErrorHandling,
+  psqlErrorHandling,
+  generalErrorHandling,
+} = require("./errors/errors");
 
 app.use(express.json());
 
@@ -25,17 +30,16 @@ app.post("/api/articles/:article_id/comments", postComment);
 
 app.patch("/api/articles/:article_id", patchArticle);
 
+app.delete("/api/comments/:comment_id", deleteComment);
 
 //Error-Handling Middleware
 
 app.all("/*", (request, response) => {
-  response
-    .status(404)
-    .send({ message: "Endpoint not found!" });
-}); 
+  response.status(404).send({ message: "Endpoint not found!" });
+});
 
-app.use(customErrorHandling)
-app.use(psqlErrorHandling)
-app.use(generalErrorHandling)
+app.use(customErrorHandling);
+app.use(psqlErrorHandling);
+app.use(generalErrorHandling);
 
 module.exports = app;
