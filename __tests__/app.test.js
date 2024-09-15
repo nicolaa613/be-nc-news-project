@@ -378,4 +378,29 @@ describe("NC News API testing", () => {
         });
     });
   });
+  describe("DELETE /api/comments/:comment_id - will delete the comment of the requested comment id", () => {
+    test("will respond with a 204 status code and no content", () => {
+      return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+    })
+    test("will respond with a 404 status code when passed a valid comment id that does not exist", () => {
+      return request(app)
+      .delete("/api/comments/6133")
+      .expect(404)
+      .then(({body}) => {
+        const errorMessage = body.message
+        expect(errorMessage).toBe("Comment doesn't exist, cannot be deleted!")
+      })
+    })
+    test("will respond with a 400 status code when passed with an invalid comment id", () => {
+      return request(app)
+      .delete("/api/comments/pineapple")
+      .expect(400)
+      .then(({body}) => {
+        const errorMessage = body.message
+        expect(errorMessage).toBe("This is a bad request, invalid input!")
+      })
+    })
+  })
 });
