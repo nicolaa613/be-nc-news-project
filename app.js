@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const cors = require("cors")
 const { getTopics } = require("./controllers/get-topics.controller");
 const { getEndpoints } = require("./controllers/get-endpoints.controller");
 const { getArticle } = require("./controllers/get-article.controller");
@@ -14,6 +15,8 @@ const {
   psqlErrorHandling,
   generalErrorHandling,
 } = require("./errors/errors");
+
+app.use(cors())
 
 app.use(express.json());
 
